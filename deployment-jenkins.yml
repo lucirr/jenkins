@@ -1,0 +1,181 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: jenkins
+  name: jenkins
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: jenkins
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: jenkins
+    spec:
+      containers:
+      - name: jenkins
+        image: kkmbal/jenkins-blue:latest
+        imagePullPolicy: Always      
+        args:
+        - --argumentsRealm.passwd.$(ADMIN_USER)=$(ADMIN_PASSWORD)
+        - --argumentsRealm.roles.$(ADMIN_USER)=admin
+        env:
+        - name: JAVA_OPTS
+          value: "-Xms512m -Xmx512m -Djenkins.install.runSetupWizard=false"
+        - name: JENKINS_SLAVE_AGENT_PORT
+          value: "50000"
+        - name: ADMIN_USER
+          value: "1234"
+          # valueFrom:
+          #   secretKeyRef:
+          #     key: jenkins-admin-user
+          #     name: jenkins          
+        - name: ADMIN_PASSWORD
+          value: admin
+          # valueFrom:
+          #   secretKeyRef:
+          #     key: jenkins-admin-password
+          #     name: jenkins
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        - containerPort: 50000
+          name: slavelistener
+          protocol: TCP
+        # readinessProbe:
+        #   httpGet:
+        #     path: /login
+        #     port: http
+        #     scheme: HTTP
+        #   initialDelaySeconds: 60
+        # livenessProbe:
+        #   httpGet:
+        #     path: /login
+        #     port: http
+        #     scheme: HTTP        
+        #   initialDelaySeconds: 90
+        #   timeoutSeconds: 5          
+        #   failureThreshold: 12
+        resources:
+          limits:
+            cpu: "2"
+            memory: 4Gi
+          requests:
+            cpu: 50m
+            memory: 256Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        - name: jenkins-home
+          mountPath: /var/jenkins_home
+        - name: jenkins-config
+          mountPath: /var/jenkins_config
+          readOnly: true
+        - name: secrets-dir
+          mountPath: /usr/share/jenkins/ref/secrets/
+      initContainers:
+      - name: copy-default-config
+        image: alpine # kkmbal/jenkins-blue:latest
+        imagePullPolicy: Always      
+        command:
+        - sh
+        - /var/jenkins_config/apply_config.sh
+        env:
+        - name: ADMIN_PASSWORD
+          value: admin
+          # valueFrom:
+          #   secretKeyRef:
+          #     key: jenkins-admin-password
+          #     name: jenkins
+        - name: ADMIN_USER
+          value: "1234"
+          # valueFrom:
+          #   secretKeyRef:
+          #     key: jenkins-admin-user
+          #     name: jenkins
+        resources:
+          limits:
+            cpu: "2"
+            memory: 4Gi
+          requests:
+            cpu: 50m
+            memory: 256Mi
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        - name: jenkins-home
+          mountPath: /var/jenkins_home
+        - name: jenkins-config
+          mountPath: /var/jenkins_config
+        - name: secrets-dir
+          mountPath: /usr/share/jenkins/ref/secrets/
+      schedulerName: default-scheduler
+      securityContext:
+        runAsUser: 0
+      serviceAccountName: jenkins
+      volumes:
+      - name: plugins
+        emptyDir: {}
+      - name: tmp
+        emptyDir: {}
+      - name: jenkins-config
+        #emptyDir: {}
+        configMap:
+          defaultMode: 420
+          name: jenkins
+      - name: secrets-dir
+        emptyDir: {}
+      - name: jenkins-home
+        emptyDir: {}
+        # persistentVolumeClaim:
+          # claimName: jenkins-pv
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: jenkins
+  name: jenkins
+spec:
+  externalTrafficPolicy: Cluster
+  ports:
+  - name: http
+    nodePort: 32000
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: jenkins
+  sessionAffinity: None
+  type: NodePort
+status:
+  loadBalancer: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: jenkins
+  name: jenkins-agent
+spec:
+  ports:
+  - name: slavelistener
+    port: 50000
+    protocol: TCP
+    targetPort: 50000
+  selector:
+    app: jenkins
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}
