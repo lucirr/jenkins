@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: jenkins
-        image: kkmbal/jenkins-blue:latest
+        image: 101.55.50.200:5000/jenkins-blue:latest
         imagePullPolicy: Always      
         args:
         - --argumentsRealm.passwd.$(ADMIN_USER)=$(ADMIN_PASSWORD)
@@ -30,13 +30,13 @@ spec:
         - name: JENKINS_SLAVE_AGENT_PORT
           value: "50000"
         - name: ADMIN_USER
-          value: "1234"
+          value: admin
           # valueFrom:
           #   secretKeyRef:
           #     key: jenkins-admin-user
           #     name: jenkins          
         - name: ADMIN_PASSWORD
-          value: admin
+          value: "1234"
           # valueFrom:
           #   secretKeyRef:
           #     key: jenkins-admin-password
@@ -81,9 +81,11 @@ spec:
           readOnly: true
         - name: secrets-dir
           mountPath: /usr/share/jenkins/ref/secrets/
+      imagePullSecrets:
+      - name: regcred
       initContainers:
       - name: copy-default-config
-        image: alpine # kkmbal/jenkins-blue:latest
+        image: 101.55.50.200:5000/alpine
         imagePullPolicy: Always      
         command:
         - sh
@@ -134,9 +136,10 @@ spec:
       - name: secrets-dir
         emptyDir: {}
       - name: jenkins-home
-        emptyDir: {}
-        # persistentVolumeClaim:
-          # claimName: jenkins-pv
+        # emptyDir: {}
+        persistentVolumeClaim:
+          claimName: jenkins-pv
+     
 
 ---
 apiVersion: v1

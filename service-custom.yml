@@ -93,7 +93,7 @@ data:
               <name>default</name>
               <instanceCap>2147483647</instanceCap>
               <idleMinutes>0</idleMinutes>
-              <label>jenkins-jenkins-slave </label>
+              <label>jenkins-jenkins-slave</label>
               <serviceAccount>default</serviceAccount>
               <nodeSelector></nodeSelector>
                 <nodeUsageMode>NORMAL</nodeUsageMode>
@@ -106,7 +106,8 @@ data:
               <containers>
                 <org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
                   <name>jnlp</name>
-                  <image>jenkins/jnlp-slave:3.29-1</image>
+                  <image>101.55.50.200:5000/jenkins/jnlp-slave:3.29-1-alpine</image>
+                  <imagePullSecretName>regcred</imagePullSecretName>
                   <privileged>false</privileged>
                   <alwaysPullImage>false</alwaysPullImage>
                   <workingDir>/home/jenkins</workingDir>
