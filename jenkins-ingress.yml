@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: jenkins4
+  name: jenkins
 spec:
   rules:
 #  - host: jenkins.default.101.55.50.200.nip.io
