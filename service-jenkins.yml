@@ -102,6 +102,10 @@ data:
                   <hostPath>/var/run/docker.sock</hostPath>
                   <mountPath>/var/run/docker.sock</mountPath>
                 </org.csanchez.jenkins.plugins.kubernetes.volumes.HostPathVolume>
+                <org.csanchez.jenkins.plugins.kubernetes.volumes.ConfigMapVolume>
+                  <mountPath>/home/jenkins/.m2</mountPath>
+                  <configMapName>jenkins-maven-settings</configMapName>
+                </org.csanchez.jenkins.plugins.kubernetes.volumes.ConfigMapVolume>
               </volumes>
               <containers>
                 <org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
@@ -128,11 +132,33 @@ data:
                     </org.csanchez.jenkins.plugins.kubernetes.ContainerEnvVar>
                   </envVars>
                 </org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
+                <org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
+                  <name>kubectl</name>
+                  <image>101.55.50.200:5000/lachlanevenson/k8s-kubectl</image>
+                  <imagePullSecretName>regcred</imagePullSecretName>
+                  <privileged>false</privileged>
+                  <alwaysPullImage>true</alwaysPullImage>
+                  <command>cat</command>
+                  <ttyEnabled>true</ttyEnabled>
+                </org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
+                <org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
+                  <name>docker</name>
+                  <image>101.55.50.200:5000/docker</image>
+                  <imagePullSecretName>regcred</imagePullSecretName>
+                  <privileged>false</privileged>
+                  <alwaysPullImage>true</alwaysPullImage>
+                  <command>cat</command>
+                  <ttyEnabled>true</ttyEnabled>
+                </org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
               </containers>
               <envVars>
               </envVars>
               <annotations/>
-              <imagePullSecrets/>
+              <imagePullSecrets>
+                <org.csanchez.jenkins.plugins.kubernetes.PodImagePullSecret>
+                  <name>regcred</name>
+                </org.csanchez.jenkins.plugins.kubernetes.PodImagePullSecret>
+              </imagePullSecrets>  
               <nodeProperties/>
               <podRetention class="org.csanchez.jenkins.plugins.kubernetes.pod.retention.Default"/>
             </org.csanchez.jenkins.plugins.kubernetes.PodTemplate></templates>
@@ -184,4 +210,20 @@ data:
       <adminAddress></adminAddress>
       <jenkinsUrl>http://192.168.99.101</jenkinsUrl>
     </jenkins.model.JenkinsLocationConfiguration>
-  plugins.txt: ""
+  plugins.txt: "" 
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: jenkins-maven-settings
+  name: jenkins-maven-settings
+data:
+  settings.xml: |-
+    <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                          https://maven.apache.org/xsd/settings-1.0.0.xsd">
+      <localRepository>/var/jenkins_home/repository</localRepository>
+    </settings>      
