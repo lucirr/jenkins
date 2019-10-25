@@ -1,17 +1,18 @@
-apiVersion: extensions/v1beta1
-kind: Deployment
+apiVersion: apps/v1
+kind: StatefulSet
 metadata:
   labels:
     app: jenkins
   name: jenkins
 spec:
-  replicas: 1
+  replicas: 2
   revisionHistoryLimit: 10
   selector:
     matchLabels:
       app: jenkins
-  strategy:
-    type: Recreate
+  # strategy:
+  #   type: Recreate
+  serviceName: jenkins
   template:
     metadata:
       labels:
@@ -48,20 +49,20 @@ spec:
         - containerPort: 50000
           name: slavelistener
           protocol: TCP
-        readinessProbe:
-          httpGet:
-            path: /login
-            port: http
-            scheme: HTTP
-          initialDelaySeconds: 60
-        livenessProbe:
-          httpGet:
-            path: /login
-            port: http
-            scheme: HTTP        
-          initialDelaySeconds: 90
-          timeoutSeconds: 5          
-          failureThreshold: 12
+        # readinessProbe:
+        #   httpGet:
+        #     path: /login
+        #     port: http
+        #     scheme: HTTP
+        #   initialDelaySeconds: 60
+        # livenessProbe:
+        #   httpGet:
+        #     path: /login
+        #     port: http
+        #     scheme: HTTP        
+        #   initialDelaySeconds: 90
+        #   timeoutSeconds: 5          
+        #   failureThreshold: 12
         resources:
           limits:
             cpu: "2"
@@ -135,10 +136,18 @@ spec:
           name: jenkins
       - name: secrets-dir
         emptyDir: {}
-      - name: jenkins-home
-        # emptyDir: {}
-        persistentVolumeClaim:
-          claimName: jenkins-pvc
+      # - name: jenkins-home
+      #   # emptyDir: {}
+      #   persistentVolumeClaim:
+      #     claimName: jenkins-pvc
+  volumeClaimTemplates:
+  - metadata:
+      name: jenkins-home
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi          
      
 
 ---
