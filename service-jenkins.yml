@@ -87,6 +87,7 @@ data:
       <clouds>
         <org.csanchez.jenkins.plugins.kubernetes.KubernetesCloud plugin="kubernetes@">
           <name>kubernetes</name>
+          <defaultsProviderTemplate>jenkins-jenkins-slave</defaultsProviderTemplate>
           <templates>
             <org.csanchez.jenkins.plugins.kubernetes.PodTemplate>
               <inheritFrom></inheritFrom>
