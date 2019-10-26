@@ -87,11 +87,11 @@ data:
       <clouds>
         <org.csanchez.jenkins.plugins.kubernetes.KubernetesCloud plugin="kubernetes@">
           <name>kubernetes</name>
-          <defaultsProviderTemplate>jenkins-jenkins-slave</defaultsProviderTemplate>
+          <defaultsProviderTemplate></defaultsProviderTemplate>
           <templates>
             <org.csanchez.jenkins.plugins.kubernetes.PodTemplate>
               <inheritFrom></inheritFrom>
-              <name>default</name>
+              <name>jenkins-jenkins-slave</name>
               <instanceCap>2147483647</instanceCap>
               <idleMinutes>0</idleMinutes>
               <label>jenkins-jenkins-slave</label>
@@ -111,7 +111,7 @@ data:
               <containers>
                 <org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
                   <name>jnlp</name>
-                  <image>101.55.50.200:5000/jenkins/jnlp-slave:3.29-1-alpine</image>
+                  <image>jenkins/jnlp-slave:3.35-5-alpine</image>
                   <imagePullSecretName>regcred</imagePullSecretName>
                   <privileged>false</privileged>
                   <alwaysPullImage>false</alwaysPullImage>
@@ -226,5 +226,5 @@ data:
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
                           https://maven.apache.org/xsd/settings-1.0.0.xsd">
-      <localRepository>/var/jenkins_home/repository</localRepository>
+      <localRepository>/tmp/repository</localRepository>
     </settings>      
