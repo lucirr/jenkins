@@ -2,12 +2,21 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: jenkins
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"
 spec:
   rules:
-#  - host: jenkins.default.101.55.50.200.nip.io
-  - http:
+  - host: hello-world.info # jenkins.default.101.55.50.200.nip.io
+    http:
      paths:
      - path: /
        backend:
         serviceName: jenkins
         servicePort: 8080
+     - path: /cli
+       backend:
+        serviceName: jenkins
+        servicePort: 8080        

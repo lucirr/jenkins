@@ -111,7 +111,7 @@ data:
               <containers>
                 <org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
                   <name>jnlp</name>
-                  <image>jenkins/jnlp-slave:3.35-5-alpine</image>
+                  <image>10.31.10.7:5000/jenkins/jnlp-slave:3.29-1-alpine</image>
                   <imagePullSecretName>regcred</imagePullSecretName>
                   <privileged>false</privileged>
                   <alwaysPullImage>false</alwaysPullImage>
@@ -135,7 +135,7 @@ data:
                 </org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
                 <org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
                   <name>kubectl</name>
-                  <image>101.55.50.200:5000/lachlanevenson/k8s-kubectl</image>
+                  <image>10.31.10.7:5000/k8s-kubectl</image>
                   <imagePullSecretName>regcred</imagePullSecretName>
                   <privileged>false</privileged>
                   <alwaysPullImage>true</alwaysPullImage>
@@ -144,7 +144,7 @@ data:
                 </org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
                 <org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
                   <name>docker</name>
-                  <image>101.55.50.200:5000/docker</image>
+                  <image>10.31.10.7:5000/docker</image>
                   <imagePullSecretName>regcred</imagePullSecretName>
                   <privileged>false</privileged>
                   <alwaysPullImage>true</alwaysPullImage>

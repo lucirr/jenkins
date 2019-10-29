@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: jenkins
-        image: 101.55.50.200:5000/jenkins-blue:latest
+        image: 10.31.10.7:5000/jenkins-blue:latest
         imagePullPolicy: Always      
         args:
         - --argumentsRealm.passwd.$(ADMIN_USER)=$(ADMIN_PASSWORD)
@@ -85,7 +85,7 @@ spec:
       - name: regcred
       initContainers:
       - name: copy-default-config
-        image: 101.55.50.200:5000/alpine
+        image: 10.31.10.7:5000/alpine
         imagePullPolicy: Always      
         command:
         - sh
@@ -159,7 +159,7 @@ spec:
   selector:
     app: jenkins
   sessionAffinity: None
-  type: NodePort
+  type: NodePort # ClusterIP
 status:
   loadBalancer: {}
 
